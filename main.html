@@ -1,16 +1,160 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
 <head>
-	<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 2px solid black;
+            border-radius: 10px;
+        }
+        .message {
+            font-size: 20px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            border: 2px solid black;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
-
 <body>
-	<!-- the entire body must be written by student -->
-    <script type="text/javascript" src="./script.js">
-</script>
+
+    <div class="container" id="playerInput">
+        <h1>Tic Tac Toe</h1>
+        <input type="text" id="player-1" placeholder="Enter Player 1 Name">
+        <input type="text" id="player-2" placeholder="Enter Player 2 Name">
+        <button id="submit" onclick="startGame()">Submit</button>
+    </div>
+
+    <div class="container hidden" id="gameArea">
+        <h1>Tic Tac Toe</h1>
+        <div class="message" id="turnMessage"></div>
+        <div class="board" id="board">
+            <div class="cell" id="1" onclick="makeMove(1)"></div>
+            <div class="cell" id="2" onclick="makeMove(2)"></div>
+            <div class="cell" id="3" onclick="makeMove(3)"></div>
+            <div class="cell" id="4" onclick="makeMove(4)"></div>
+            <div class="cell" id="5" onclick="makeMove(5)"></div>
+            <div class="cell" id="6" onclick="makeMove(6)"></div>
+            <div class="cell" id="7" onclick="makeMove(7)"></div>
+            <div class="cell" id="8" onclick="makeMove(8)"></div>
+            <div class="cell" id="9" onclick="makeMove(9)"></div>
+        </div>
+        <button onclick="resetGame()">Restart Game</button>
+    </div>
+
+    <script>
+        let player1, player2, currentPlayer, board, gameOver, turnCount;
+
+        function startGame() {
+            player1 = document.getElementById("player-1").value.trim();
+            player2 = document.getElementById("player-2").value.trim();
+
+            if (player1 === "" || player2 === "") {
+                alert("Please enter names for both players!");
+                return;
+            }
+
+            // Initialize game state
+            currentPlayer = "X"; // First move is always X
+            turnCount = 0;
+            board = ["", "", "", "", "", "", "", "", ""];
+            gameOver = false;
+
+            document.getElementById("turnMessage").innerText = `${player1} (X), you're up!`;
+
+            // Hide input form & show game board
+            document.getElementById("playerInput").classList.add("hidden");
+            document.getElementById("gameArea").classList.remove("hidden");
+
+            // Clear board
+            document.querySelectorAll(".cell").forEach(cell => cell.innerText = "");
+        }
+
+        function makeMove(cellId) {
+            if (gameOver) return;
+
+            let cell = document.getElementById(cellId);
+            if (cell.innerText !== "") return;
+
+            // Determine whose turn it is based on turn count
+            currentPlayer = turnCount % 2 === 0 ? "X" : "O";
+            board[cellId - 1] = currentPlayer;
+            cell.innerText = currentPlayer;
+
+            if (checkWinner(currentPlayer)) {
+                let winner = currentPlayer === "X" ? player1 : player2;
+                document.getElementById("turnMessage").innerText = `${winner} (${currentPlayer}) Congratulations! You won! 🎉`;
+                gameOver = true;
+                return;
+            }
+
+            if (!board.includes("")) {
+                document.getElementById("turnMessage").innerText = "It's a draw! 😲";
+                gameOver = true;
+                return;
+            }
+
+            // Increase turn count and update message
+            turnCount++;
+            let nextPlayer = turnCount % 2 === 0 ? player1 : player2;
+            document.getElementById("turnMessage").innerText = `${nextPlayer}, you're up!`;
+        }
+
+        function checkWinner(symbol) {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],  // Rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],  // Columns
+                [0, 4, 8], [2, 4, 6]              // Diagonals
+            ];
+
+            return winPatterns.some(pattern =>
+                pattern.every(index => board[index] === symbol)
+            );
+        }
+
+        function resetGame() {
+            document.getElementById("playerInput").classList.remove("hidden");
+            document.getElementById("gameArea").classList.add("hidden");
+            document.getElementById("player-1").value = "";
+            document.getElementById("player-2").value = "";
+        }
+    </script>
 
 </body>
-
 </html>
